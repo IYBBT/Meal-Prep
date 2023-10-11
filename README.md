@@ -1,2 +1,2 @@
 
-# Gettysburg College Schedule Builder
+# CS360 Meal Prep
