@@ -2,7 +2,7 @@
 CREATE TABLE meal (
     mid     INT AUTO_INCREMENT PRIMARY KEY,
     mName   VARCHAR(64),
-    recipe  VARCHAR(256),
+    recipe  VARCHAR(256)
 );
 
 CREATE TABLE ingredient (
@@ -12,37 +12,40 @@ CREATE TABLE ingredient (
 );
 
 CREATE TABLE user (
-    username   VARCHAR(64) PRIMARY KEY,
-    pWord      VARCHAR(128);
+    id         INT AUTO_INCREMENT,
+    username   VARCHAR(64),
+    pWord      VARCHAR(128),
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE admin (
-    aid        INT AUTO_INCREMENT PRIMARY KEY,
-    username   VARCHAR(64) FOREIGN KEY
+    aid     INT PRIMARY KEY,
+    FOREIGN KEY (aid) REFERENCES user(id)
 );
 
 CREATE TABLE end (
-    uid        INT AUTO_INCREMENT PRIMARY KEY,
-    username   VARCHAR(64) FOREIGN KEY
+    uid     INT PRIMARY KEY,
+    FOREIGN KEY (uid) REFERENCES user(id)
 );
 
 CREATE TABLE possess (
-    uid     INT FOREIGN KEY,
-    iid     INT FOREIGN KEY
+    uid     INT,
+    iid     INT
 );
 
 CREATE TABLE review (
-    uid     INT FOREIGN KEY,
-    mid     INT FOREIGN KEY,
+    uid     INT,
+    mid     INT,
     rating  INT
 );
 
 CREATE TABLE manages (
-    aid  INT FOREIGN KEY,
-    uid  INT FOREIGN KEY
+    aid  INT,
+    uid  INT
 );
 
-CREATE TABLE uses (
-    mid  PRIMARY KEY,
-    iid  FOREIGN KEY
+-- Ingredients Used in meals
+CREATE TABLE meal_uses (
+    mid  INT,
+    iid  INT
 );

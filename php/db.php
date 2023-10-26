@@ -2,7 +2,7 @@
 <?php
 
 $server = "cray.cs.gettysburg.edu";
-$dbase  = "f23_grotka01";
+$dbase  = "f23_1";
 $user   = "grotka01";
 $pass   = "grotka01";
 
