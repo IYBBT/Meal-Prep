@@ -2,8 +2,13 @@
 CREATE TABLE meal (
     mid     INT AUTO_INCREMENT PRIMARY KEY,
     mName   VARCHAR(64),
-    recipe  VARCHAR(256)
 );
+
+CREATE TABLE recipe_step (
+    mid     INT,
+    rid     INT,
+    step    VARCHAR(256)
+)
 
 CREATE TABLE ingredient (
     iid     INT AUTO_INCREMENT PRIMARY KEY,
@@ -12,10 +17,9 @@ CREATE TABLE ingredient (
 );
 
 CREATE TABLE user (
-    id         INT AUTO_INCREMENT,
-    username   VARCHAR(64),
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    uName      VARCHAR(64) UNIQUE,
     pWord      VARCHAR(128),
-    PRIMARY KEY (id)
 );
 
 CREATE TABLE admin (
