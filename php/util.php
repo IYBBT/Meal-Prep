@@ -22,7 +22,7 @@ include_once('db.php');
 function loginForm() {
     ?>
 
-    <FORM class='login-form' action='?menu=login' method='post'>
+    <FORM class='login-form' action='dashboard.php?menu=login' method='post'>
         <INPUT class='login-item' type='text' name='uName' placeholder='Username' size=5 />
         <INPUT class='login-item' type='text' name='pWord' placeholder='Password' size=5 />
         Remember Me<INPUT class='login-item' type='checkbox' name='rm'/>

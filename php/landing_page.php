@@ -28,6 +28,19 @@ include_once('util.php');
         ?>
 
         <STYLE>
+            .main {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 2;
+                top: 0;
+                left: 200;
+                background-color: #E0E0E0;
+                overflow-x: hidden;
+                padding-top: 10px;
+                padding-left: 20px;
+            }
+
             .sidenav {
                 height: 100%;
                 width: 200px;
@@ -49,7 +62,7 @@ include_once('util.php');
         <?php
         if ($menu == 'landing-page') {
             ?>
-            <DIV class='col-2 sidenav'>
+            <DIV class='sidenav'>
                 <?php
                 loginForm();
                 ?>
