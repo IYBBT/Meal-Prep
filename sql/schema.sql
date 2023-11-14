@@ -7,7 +7,8 @@ CREATE TABLE meal (
 CREATE TABLE recipe_step (
     mid     INT,
     rid     INT,
-    step    VARCHAR(256)
+    step    VARCHAR(256),
+    PRIMARY KEY (mid, rid)
 );
 
 CREATE TABLE ingredient (
@@ -34,7 +35,8 @@ CREATE TABLE end (
 
 CREATE TABLE possess (
     uid     INT,
-    iid     INT
+    iid     INT,
+    UNIQUE (uid, iid)
 );
 
 CREATE TABLE review (
@@ -45,11 +47,13 @@ CREATE TABLE review (
 
 CREATE TABLE manages (
     aid  INT,
-    uid  INT
+    uid  INT,
+    UNIQUE (aid, uid)
 );
 
 -- Ingredients Used in meals
 CREATE TABLE meal_uses (
     mid  INT,
-    iid  INT
+    iid  INT,
+    UNIQUE (mid, iid)
 );

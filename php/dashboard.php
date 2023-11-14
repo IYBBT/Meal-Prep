@@ -9,25 +9,42 @@
         <STYLE>
             .main {
                 height: 100%;
-                width: 100%;
+                width: 90%;
                 position: fixed;
                 z-index: 2;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
                 top: 0;
-                left: 200;
+                left: 250;
+                right: 0;
+
                 background-color: #E0E0E0;
                 overflow-x: hidden;
-                padding-top: 10px;
-                padding-left: 20px;
+            }
+
+            .grid {
+                position: fixed;
+                display: grid;
+
+                top: 0;
+                left: 250;
+                right: 0;
             }
 
             .sidenav {
                 height: 100%;
-                width: 200px;
+                width: 250px;
                 position: fixed;
                 z-index: 1;
+
                 top: 0;
                 left: 0;
+
                 background-color: #F8F8F8;
+
                 overflow-x: hidden;
                 padding-top: 10px;
 
@@ -50,6 +67,10 @@
             }
 
             .menuItem {
+                grid-row: 1;
+                height: 30px;
+                margin: 10px;
+
                 border: solid 1px black;
                 border-radius: 5px;
                 text-align: center;
@@ -71,42 +92,50 @@
                 <DIV class='user-icon'></DIV>
                 <DIV style='margin: auto; width: 50%; text-align: left;'>
                     Welcome
-                    <P style='color: #0FAF80'>Kasen Groth</P>
+                    <P style='color: #0FAF80'>grotka01</P>
                 </DIV>
 
                 <DIV style='margin: 10px;'>
-                    <A class='sidenav-links' href='landing_page.php?menu=logout'>Sign out</A>
+                    <A class='sidenav-links menuItem' href='landing_page.php?menu=logout'>Sign out</A>
                 </DIV>
                 
                 <DIV style='margin: 10px;'>
-                    <A class='sidenav-links' href='dashboard.php?menu=dashboard'>Dashboard</A>
+                    <A class='sidenav-links menuItem' href='?menu=dashboard'>Dashboard</A>
                 </DIV>
 
                 <DIV style='margin: 10px;'>
-                    <A class='sidenav-links' href='dashboard.php?menu=previousRecipes'>Previous Recipes</A>
+                    <A class='sidenav-links menuItem' href='?menu=previousRecipes'>Previous Recipes</A>
                 </DIV>
             </DIV>
 
             <DIV class='main'>
-                <DIV class='row'>
-                    <DIV class='col-5 menuItem'>
-                        Browse Recipes
+                <DIV class='grid'>
+                    <DIV style='grid-column: 1;'></DIV>
+                    <DIV class='menuItem' style='grid-column: 2;'>
+                        <A href='?menu=browse'>Browse Recipes</A>
                     </DIV>
-                    <DIV class='col-5 menuItem'>
-                        Make Recipe
+                    <DIV class='menuItem' style='grid-column: 3;'>
+                        <A href='?menu=makeRecipe'>Make Recipe</A>
                     </DIV>
+                    <DIV style='grid-column: 4;'></DIV>
                 </DIV>
 
                 <?php
-                if ($menu == 'browse') {
-                    browseCatalog();
+                print_r($_GET);
+                $menu = $_GET['menu'];
+                if ($menu == 'login' || $menu == 'dashboard') {
+                    showProfile($db, $uid);
+                } else if ($menu == 'browse') {
+                    echo "Hello World!";
+                    browseCatalog($db, $uid);
                 } else if ($menu == 'makeRecipe') {
-                    makeRecipe();
+                    makeRecipe($db);
                 } else if ($menu == 'previousRecipes') {
-                    getPreviousRecipes();
+                    getPreviousRecipes($db, $uid);
                 }
                 ?>
             </DIV>
         </DIV>
     </BODY>
 </HTML>
+

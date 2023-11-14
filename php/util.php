@@ -61,4 +61,63 @@ function getUID($db, $userInfo) {
     echo 'Failed to login. Either the Username or Password is incorrect!';
 }
 
+function showProfile($db, $userInfo) {
+
+}
+
+// Displays the meal with all of its ingredients
+function displayMeal($mealInfo) {
+    ?>
+    <DIV>
+        <?php
+        $mid = $mealInfo['mid'];
+        $name = $mealInfo['mName'];
+        $ings = $mealInfo['ings'];
+        
+        echo "<A href='?menu=recipe&mid=$mid'>$name</A>";
+        ?>
+    </DIV>
+    <?php
+}
+
+// Allows an end user to browse meals by displaying meals
+// in rows of two.
+//
+// Also, allows the user to add ingredients to their list.
+function browseCatalog($db, $uid) {
+    $sql = "SELECT * "
+        . "FROM meal";
+
+    $res = $db->query($sql);
+    if ($res != False) {
+        for ($i = 0; $i < count($res); ++$i) {
+            $meal = $res->fetch();
+            
+            if (!($i % 2))
+                echo "<DIV class='row'>";
+    
+            echo "<DIV class='col-6 mealBox'>";
+
+            print_r($meal);
+            displayMeal($meal);
+
+            echo "</DIV>";
+
+            if ($i % 2)
+                echo "</DIV>";
+        }
+    }
+}
+
+// Creates a form for an end user to create a meal
+function makeRecipe($db) {
+
+}
+
+//
+function getPreviousRecipes($db, $uid) {
+
+}
+
 ?>
+
