@@ -1,4 +1,13 @@
 
+<?php
+
+session_start();
+
+include_once('bootstrap.php');
+include_once('db.php');
+
+?>
+
 <STYLE>
     .login-form {
         margin: 3px;
@@ -10,15 +19,15 @@
         margin: 5px;
         padding: 5px;
     }
+
+    .mealBox {
+        border: solid 2px blue; 
+        margin: 3px;
+        padding: 10px;
+    }
 </STYLE>
 
 <?php
-
-session_start();
-
-include_once('bootstrap.php');
-include_once('db.php');
-
 function loginForm() {
     ?>
 
@@ -66,18 +75,51 @@ function showProfile($db, $userInfo) {
 }
 
 // Displays the meal with all of its ingredients
-function displayMeal($mealInfo) {
-    ?>
-    <DIV>
-        <?php
-        $mid = $mealInfo['mid'];
-        $name = $mealInfo['mName'];
-        $ings = $mealInfo['ings'];
+function displayMeal($db, $mealInfo) {
+    $mid = $mealInfo['mid'];
+    $name = $mealInfo['mName'];
+    $ings = $mealInfo['ings'];
+ 
+    echo "<A style='grid-columns: 1;' href='?menu=recipe&mid=$mid'>$name</A>";
+
+    $ing_types = array(
+        'Dairy'      => array(),
+        'Fruit'      => array(),
+        'Protein'    => array(),
+        'Vegetables' => array(),
+        'Grain'      => array(),
         
-        echo "<A href='?menu=recipe&mid=$mid'>$name</A>";
-        ?>
-    </DIV>
-    <?php
+        0       => 'Dairy',
+        1       => 'Fruit',
+        2       => 'Protein',
+        3       => 'Vegetables',
+        4       => 'Grain'
+    );
+
+    foreach ($ings as $ing) {
+        $iName = $ing[1];
+        $type  = $ing[2];
+
+        array_push($ing_types[$type], $iName);
+    }
+
+    for ($i = 0; $i < count($ing_types) / 2; ++$i) {
+        $type = $ing_types[$i];
+
+        $size = count($ing_types[$type]);
+        if ($size > 0) {
+            echo "<SELECT name='$type'>";
+            echo "<OPTION>$type</OPTION>";
+        }
+        
+        for ($f = 0; $f < $size; ++$f) {
+            $iName = $ing_types[$type][$f];
+            echo "<OPTION>$iName</OPTION>";
+        }
+
+        if ($size > 0)
+            echo "</SELECT>";
+    }
 }
 
 // Allows an end user to browse meals by displaying meals
@@ -89,24 +131,29 @@ function browseCatalog($db, $uid) {
         . "FROM meal";
 
     $res = $db->query($sql);
-    if ($res != False) {
-        for ($i = 0; $i < count($res); ++$i) {
-            $meal = $res->fetch();
-            
-            if (!($i % 2))
-                echo "<DIV class='row'>";
-    
-            echo "<DIV class='col-6 mealBox'>";
 
-            print_r($meal);
-            displayMeal($meal);
+    echo "<DIV style='position: fixed; display: grid; top: 150; left: 250; right: 0;'>";
+    if ($res) {
+        $meals = $res->fetchAll();
+        for ($i = 0; $i < count($meals); ++$i) {
+            $meal = $meals[$i];
+            $mid = $meal['mid'];
+            $sql = "SELECT * "
+                . "FROM meal_uses NATURAL JOIN ingredient "
+                . "WHERE mid=$mid";
 
+            $res = $db->query($sql);
+            $ings = array();
+            while ($row = $res->fetch())
+                array_push($ings, array($row[0], $row[2], $row[3]));
+
+            echo "<DIV class='mealBox' style='grid'>";
+            $meal['ings'] = $ings;
+            displayMeal($db, $meal);
             echo "</DIV>";
-
-            if ($i % 2)
-                echo "</DIV>";
         }
     }
+    echo "</DIV>";
 }
 
 // Creates a form for an end user to create a meal
@@ -116,8 +163,7 @@ function makeRecipe($db) {
 
 //
 function getPreviousRecipes($db, $uid) {
-
+    
 }
 
 ?>
-

@@ -51,12 +51,6 @@
                 text-align: center;
             }
 
-            .sidenav-links {
-                border: solid #5E5E5E 1px;
-                border-radius: 5px;
-                padding: 5px;
-            }
-
             .user-icon {
                 width: 70px;
                 height: 70px;
@@ -67,7 +61,6 @@
             }
 
             .menuItem {
-                grid-row: 1;
                 height: 30px;
                 margin: 10px;
 
@@ -77,6 +70,8 @@
                 font-size: 20px;
                 background-color: #E0E0E0;
                 color: blue;
+
+                text-decoration: none;
             }
 
             .menuItem:hover {
@@ -95,38 +90,25 @@
                     <P style='color: #0FAF80'>grotka01</P>
                 </DIV>
 
-                <DIV style='margin: 10px;'>
-                    <A class='sidenav-links menuItem' href='landing_page.php?menu=logout'>Sign out</A>
-                </DIV>
-                
-                <DIV style='margin: 10px;'>
-                    <A class='sidenav-links menuItem' href='?menu=dashboard'>Dashboard</A>
-                </DIV>
-
-                <DIV style='margin: 10px;'>
-                    <A class='sidenav-links menuItem' href='?menu=previousRecipes'>Previous Recipes</A>
-                </DIV>
+                <A class='menuItem' style='position: fixed; top: 165; left: 20; width: 185;' href='landing_page.php?menu=logout'>Sign out</A>
+                <A class='menuItem' style='position: fixed; top: 215; left: 20; width: 185;' href='?menu=dashboard'>Dashboard</A>
+                <A class='menuItem' style='position: fixed; top: 265; left: 20; width: 185;'  href='?menu=previousRecipes'>Previous Recipes</A>
             </DIV>
 
             <DIV class='main'>
                 <DIV class='grid'>
                     <DIV style='grid-column: 1;'></DIV>
-                    <DIV class='menuItem' style='grid-column: 2;'>
-                        <A href='?menu=browse'>Browse Recipes</A>
-                    </DIV>
-                    <DIV class='menuItem' style='grid-column: 3;'>
-                        <A href='?menu=makeRecipe'>Make Recipe</A>
-                    </DIV>
+                    <A class='menuItem' style='grid-column: 2' href='?menu=browse'>Browse Recipes</A>
+                    <A class='menuItem' style='grid-column: 3' href='?menu=makeRecipe'>Make Recipe</A>
                     <DIV style='grid-column: 4;'></DIV>
                 </DIV>
 
                 <?php
-                print_r($_GET);
+                // print_r($_GET);
                 $menu = $_GET['menu'];
                 if ($menu == 'login' || $menu == 'dashboard') {
                     showProfile($db, $uid);
                 } else if ($menu == 'browse') {
-                    echo "Hello World!";
                     browseCatalog($db, $uid);
                 } else if ($menu == 'makeRecipe') {
                     makeRecipe($db);
@@ -138,4 +120,3 @@
         </DIV>
     </BODY>
 </HTML>
-
