@@ -25,6 +25,20 @@ include_once('db.php');
         margin: 3px;
         padding: 10px;
     }
+
+    .scrollable-box {
+        overflow: auto;
+        max-height: 85%;
+
+        margin: 5px;
+        padding: 2px;
+
+        position: fixed;
+        display: grid;
+        top: 150;
+        left: 250;image_url
+        right: 0;
+    }
 </STYLE>
 
 <?php
@@ -74,13 +88,91 @@ function showProfile($db, $userInfo) {
 
 }
 
-// Displays the meal with all of its ingredients
+// Shows the recipe with all steps, ingredients, and picture
+function showRecipe($db, $mid) {
+    $sql = "SELECT mName, meal_image "
+        . "FROM meal "
+        . "WHERE mid=$mid";
+
+    $res = $db->query($sql);
+    if (!$res) {
+        header('refresh:2?menu=dashboard');
+        echo 'Failed to find the recipe!';
+    }
+
+    $mealInfo = $res->fetch();
+    $mName = $mealInfo['mName'];
+    $image_url = $mealInfo['meal_image'];
+    ?>
+
+    <STYLE>
+        .recipe {
+            display: grid;
+        }
+
+        .meal-name {
+            text-align: center;
+            grid-row: 1;
+        }
+
+        .recipe_image {
+            grid-row: 1;
+            grid-column: 1;
+            justify-self: center;
+            margin: 25px;
+        }
+    </STYLE>
+
+    <DIV class='recipe'>
+
+    <?php
+        echo "<P class='meal-name'>$mName</P>";
+        ?>
+        <DIV style='display: grid;'>
+            <?php
+            echo "<IMG class='recipe_image' src='$image_url' alt='$mName' width='200' height='200'>";
+            echo "<DIV style='grid-column: 0; grid-row: 1; margin: 30px'>";
+            $sql = "SELECT step "
+            . "FROM meal NATURAL JOIN recipe_step "
+            . "WHERE mid=$mid";
+
+            $res = $db->query($sql);
+            if (!$res) {
+                header('refresh:2?menu=dashboard');
+                echo 'Failed to find the recipe!';
+            }
+
+            $i = 0;
+            while ($step = $res->fetch()) {
+                echo "<P>" . ++$i . "). " . $step[0] . "</P>";
+            }
+
+            $sql = "SELECT iName, type "
+                . "FROM meal NATURAL JOIN meal_uses "
+                . "NATURAL JOIN ingredient "
+                . "WHERE mid=$mid";
+
+            $res = $db->query($sql);
+            if (!$res) {
+                header('refresh:2?menu=dashboard');
+                echo 'Failed to find the ingredients used in the recipe';
+            }
+
+            $ingredients = $res->fetchAll();
+            ?>
+        </DIV>
+    </DIV>
+    <?php
+}
+
+// 
 function displayMeal($db, $mealInfo) {
     $mid = $mealInfo['mid'];
     $name = $mealInfo['mName'];
     $ings = $mealInfo['ings'];
  
     echo "<A style='grid-columns: 1;' href='?menu=recipe&mid=$mid'>$name</A>";
+    echo "<BR/><BR/>";
 
     $ing_types = array(
         'Dairy'      => array(),
@@ -114,7 +206,7 @@ function displayMeal($db, $mealInfo) {
         
         for ($f = 0; $f < $size; ++$f) {
             $iName = $ing_types[$type][$f];
-            echo "<OPTION>$iName</OPTION>";
+            echo "<OPTION disabled>$iName</OPTION>";
         }
 
         if ($size > 0)
@@ -132,7 +224,7 @@ function browseCatalog($db, $uid) {
 
     $res = $db->query($sql);
 
-    echo "<DIV style='position: fixed; display: grid; top: 150; left: 250; right: 0;'>";
+    echo "<DIV class='scrollable-box'>";
     if ($res) {
         $meals = $res->fetchAll();
         for ($i = 0; $i < count($meals); ++$i) {

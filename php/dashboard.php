@@ -110,6 +110,8 @@
                     showProfile($db, $uid);
                 } else if ($menu == 'browse') {
                     browseCatalog($db, $uid);
+                } else if ($menu == 'recipe') {
+                    showRecipe($db, $_GET['mid']);
                 } else if ($menu == 'makeRecipe') {
                     makeRecipe($db);
                 } else if ($menu == 'previousRecipes') {
