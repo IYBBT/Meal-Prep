@@ -131,7 +131,7 @@ function showRecipe($db, $mid) {
         <DIV style='display: grid;'>
             <?php
             echo "<IMG class='recipe_image' src='$image_url' alt='$mName' width='200' height='200'>";
-            echo "<DIV style='grid-column: 0; grid-row: 1; margin: 30px'>";
+            echo "<DIV style='grid-column: 0; grid-row: 1; margin: 3px'>";
             $sql = "SELECT step "
             . "FROM meal NATURAL JOIN recipe_step "
             . "WHERE mid=$mid";
