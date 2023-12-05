@@ -1,7 +1,9 @@
 
 CREATE TABLE meal (
     mid     INT AUTO_INCREMENT PRIMARY KEY,
+    uid     INT,
     mName   VARCHAR(64)
+    image   BLOB
 );
 
 CREATE TABLE recipe_step (
@@ -42,7 +44,8 @@ CREATE TABLE possess (
 CREATE TABLE review (
     uid     INT,
     mid     INT,
-    rating  INT
+    rating  INT,
+    review  VARCHAR(256)
 );
 
 CREATE TABLE manages (

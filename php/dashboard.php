@@ -9,7 +9,6 @@
         <STYLE>
             .main {
                 height: 100%;
-                width: 90%;
                 position: fixed;
                 z-index: 2;
 
@@ -92,7 +91,7 @@
 
                 <A class='menuItem' style='position: fixed; top: 165; left: 20; width: 185;' href='landing_page.php?menu=logout'>Sign out</A>
                 <A class='menuItem' style='position: fixed; top: 215; left: 20; width: 185;' href='?menu=dashboard'>Dashboard</A>
-                <A class='menuItem' style='position: fixed; top: 265; left: 20; width: 185;'  href='?menu=previousRecipes'>Previous Recipes</A>
+                <A class='menuItem' style='position: fixed; top: 265; left: 20; width: 185;'  href='?menu=previousRecipes'>Trending Recipes</A>
             </DIV>
 
             <DIV class='main'>
@@ -106,16 +105,21 @@
                 <?php
                 // print_r($_GET);
                 $menu = $_GET['menu'];
+                $uid = 4; //$_SESSION['uid'];
                 if ($menu == 'login' || $menu == 'dashboard') {
                     showProfile($db, $uid);
                 } else if ($menu == 'browse') {
-                    browseCatalog($db, $uid);
+                    browseCatalog($db);
+                } else if($menu == 'generateRecipe') {
+                    genRecipe($db,$_POST);
                 } else if ($menu == 'recipe') {
                     showRecipe($db, $_GET['mid']);
                 } else if ($menu == 'makeRecipe') {
                     makeRecipe($db);
                 } else if ($menu == 'previousRecipes') {
                     getPreviousRecipes($db, $uid);
+                } else if ($menu == 'addreview') {
+                    addReview($db, $uid, $_POST);
                 }
                 ?>
             </DIV>
