@@ -125,17 +125,19 @@
                 </DIV>
 
                 <DIV style='margin: 10px;'>
-                    <A class='sidenav-links menuItem' href='?menu=previousRecipes'>Trending Recipe</A>
+                    <A class='sidenav-links menuItem' href='?menu=trendingRecipes'>Trending Recipe</A>
                 </DIV>
 
             <DIV class='main'>
                 <?php
-                if ($menu == 'login' || $menu == 'dashboard') {
+                $menu = $_GET['menu'];
+                $uid = $_SESSION['uid'];
+                if ($menu == 'dashboard') {
                     showProfile($db, $uid);
                 } else if ($menu == 'browse') {
                     browseCatalog($db);
                 } else if($menu == 'generateRecipe') {
-                    genRecipe($db,$_POST);
+                    genRecipe($db, $_POST);
                 } else if ($menu == 'recipe') {
                     showRecipe($db, $_GET['mid']);
                 } else if ($menu == 'makeRecipe') {
@@ -146,6 +148,8 @@
                     addReview($db, $uid, $_POST);
                 } else if ($menu == 'profile'){
                     displayUserProfile($db, $dietaryRestrictions, $uid);
+                } else if ($menu == 'mealClicked') {
+                    click($db, $_GET['mid']);
                 }
                 ?>
             </DIV>

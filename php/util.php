@@ -126,7 +126,7 @@ function showProfile($db, $uid) {
 
     $res = $db->query($sql);
     if (!$res) {
-        header("refresh: 2;url=dashboard.php?menu=dashboard");
+        header("refresh: 2;url=end-user.php?menu=dashboard");
         echo "Could not find your meals";
     } else {
         echo "<DIV class='browse_tab'>";
@@ -292,7 +292,7 @@ function showRecipe($db, $mid) {
 
             $res = $db->query($sql);
             if (!$res) {
-                header("refresh:2;url=dashboard.php?menu=browse");
+                header("refresh:2;url=end-user.php?menu=browse");
                 echo "Could not load reviews";
             } else {
                 while ($r = $res->fetch()) {
@@ -407,7 +407,7 @@ function browseCatalog($db) {
 function recipeForm($db) {
     $types = [ 'Dairy', 'Fruit', 'Protein', 'Vegetables', 'Grain' ];
 
-    echo "<FORM style='grid-row: 1;' name='recipe' action ='dashboard.php?menu=generateRecipe'  method='POST'>\n";
+    echo "<FORM style='grid-row: 1;' name='recipe' action ='end-user.php?menu=generateRecipe'  method='POST'>\n";
 
     $i = 0;
     foreach ($types as $type) {
@@ -486,7 +486,7 @@ function addReview($db, $uid, $reviewInfo) {
 
     ?>
     <SCRIPT>
-        change_page("dashboard.php?menu=dashboard", 1000);
+        change_page("end-user.php?menu=dashboard", 1000);
     </SCRIPT>
     <?php    
 }
@@ -503,6 +503,8 @@ function click($db, $mid) {
     if (!$res) {
         echo "<SCRIPT>change_page('?menu=dashboard', 1000)</SCRIPT>";
         echo "Error adding click to database";
+    } else {
+        echo "<SCRIPT>change_page('?menu=recipe&mid=$mid', 0);</SCRIPT>";
     }
 }
 
