@@ -315,7 +315,7 @@ function displayMeal($db, $mealInfo) {
     $name = $mealInfo['mName'];
     $ings = $mealInfo['ings'];
  
-    echo "<A style='grid-columns: 1;' href='?menu=recipe&mid=$mid'>$name</A>";
+    echo "<A style='grid-columns: 1;' href='?menu=mealClicked&mid=$mid'>$name</A>";
     echo "<BR/><BR/>";
 
     $ing_types = array(
@@ -496,8 +496,21 @@ function makeRecipe($db) {
 
 }
 
+function click($db, $mid) {
+    $sql = "INSERT INTO click(mid, cdate) VALUE($mid, CURRENT_DATE()); ";
+
+    $res = $db->query($sql);
+    if (!$res) {
+        echo "<SCRIPT>change_page('?menu=dashboard', 1000)</SCRIPT>";
+        echo "Error adding click to database";
+    }
+}
+
+// Generates a trending recipe, which is the recipe with the most engagement (clicks) today. If there is a tie between multiple, a random one of the most
+// highly engaged recipes is selected.
 function getTrendingRecipes($db, $uid) {
-    $sql = "SELECT meal.mid, mName, meal_image
+
+    $sql = "SELECT meal.mid, mName, image
             FROM click RIGHT OUTER JOIN meal
             ON meal.mid = click.mid AND cdate = CURRENT_DATE
             GROUP BY meal.mid
@@ -509,13 +522,70 @@ function getTrendingRecipes($db, $uid) {
             );";
 
     $res = $db->query($sql);
-    if (!$res) {
-        echo "<SCRIPT>change_page('dashboard.php?menu=dashboard', 1000)</SCRIPT>";
-        echo "A trending recipe was not generated.";
+    if ($res == FALSE) {
+        echo "SQL query error: a trending recipe was not generated.";
     } else {
         $recipes = $res->fetchAll();
-        echo "There were " . count($recipes) . " results.";
+        $trendingNum = random_int(0, count($res) - 1);
+        echo "<DIV class='col-5'></DIV><P>There were " . count($recipes) . " results.</P>";
+
+        $trending = $recipes[$trendingNum];
+
+        ?>
+            <DIV class='col-12' style='text-size: 30px'>Trending recipe</DIV>
+
+
+           
+        <?php
+
+       
     }
+   
+    //  style='width: 70%; height: 50%; text-align: center'
+   
 }
+
+function displayUserProfile($db, $dietaryRestrictions, $uid) {
+    echo '<DIV class="user-profile">';
+
+    // SQL query to get the saved recipes for the user
+    $recipeSql = "SELECT m.mid, m.mName, m.image "
+               . "FROM meal m "
+               . "INNER JOIN saved_recipes AS sr ON m.mid = sr.mid "
+               . "WHERE sr.uid = $uid"; 
+
+   
+    $possibleRecipes = $db->query($recipeSql);
+
+    // User's saved recipes section
+    echo '<h2>Saved Recipes</h2><DIV class="saved-recipes">';
+    while ($recipe = $possibleRecipes->fetch()) {
+        echo '<DIV class="recipe">';
+        echo '<IMG src="' . htmlspecialchars($recipe['image']) . '" alt="' . htmlspecialchars($recipe['mName']) . '">';
+        echo '<P>' . htmlspecialchars($recipe['mName']) . '</P>';
+        echo '</DIV>';
+    }
+    echo '</DIV>'; // End of saved recipes section
+
+    // Dietary restrictions section
+    echo '<h2>Dietary Restrictions</h2><DIV class="dietary-restrictions">';
+    foreach ($dietaryRestrictions as $restriction => $status) {
+        echo '<DIV class="restriction">';
+        echo '<INPUT type="checkbox" id="' . $restriction . '" name="' . $restriction . '"';
+        echo $status ? ' checked' : '';
+        echo '><LABEL for="' . $restriction . '">' . ucfirst($restriction) . '</LABEL>';
+        echo '</DIV>';
+    }
+    echo '</DIV>'; // End of dietary restrictions section
+
+    echo '</DIV>'; // End of user profile
+}
+
+// Example usage:
+$dietaryRestrictions = [
+    'gluten-free' => true,
+    'vegan' => false,
+    'nut-free' => true
+];
 
 ?>

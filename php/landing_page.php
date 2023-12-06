@@ -50,7 +50,7 @@ include_once('util.php');
 
             .bg {
                 /* The image used */
-                background-image: url("../jpg/cs360_bg.jpg");
+                background-image: url("../jpg/landing_page_bg_1.jpg");
 
                 /* Full height */
                 height: 100%;

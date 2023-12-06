@@ -23,8 +23,13 @@
                 left: 250;
                 right: 0;
 
-                background-color: #E0E0E0;
+                background-image: url('../jpg/main_bg_2.jpg'); 
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+
                 overflow-x: hidden;
+                padding: 20px; 
             }
 
             .grid {
@@ -38,47 +43,58 @@
 
             .sidenav {
                 height: 100%;
-                width: 250px;
+                width: 250px; /* Adjust width as needed */
                 position: fixed;
                 z-index: 1;
-
                 top: 0;
                 left: 0;
-
-                background-color: #F8F8F8;
-
+                background-color: #243447; /* Dark blue background */
+                color: white; /* White text color */
+                box-shadow: 4px 0 10px 0 rgba(0, 0, 0, 0.25); /* Shadow for depth */
                 overflow-x: hidden;
-                padding-top: 10px;
-
-                text-align: center;
+                padding-top: 20px; /* Spacing at the top */
+                text-align: left; /* Align text to the left */
             }
+            
 
             .user-icon {
-                width: 70px;
-                height: 70px;
-                display: block;
-                margin: 0 auto 20px auto;
-                border-radius: 50%;
-                background-color: gray;
+                width: 100px; /* Larger icon */
+                height: 100px;
+                margin: 0 auto 20px auto; /* Centered icon */
+                border-radius: 50;
+                background-color: #808080; /* Lighter grey for the icon */
+                display: flex; /* Use flexbox for centering */
+                align-items: center;
+                justify-content: center;
+            }
+
+            .user-icon::before {
+                content: '\1F464'; /* Unicode for user icon */
+                font-size: 50px; /* Larger icon size */
             }
 
             .menuItem {
-                height: 30px;
-                margin: 10px;
-
-                border: solid 1px black;
-                border-radius: 5px;
-                text-align: center;
-                font-size: 20px;
-                background-color: #E0E0E0;
-                color: blue;
-
-                text-decoration: none;
+                padding: 15px 20px; /* Larger click area */
+                margin: 5px 10px; /* Spacing between items */
+                border: none; /* No border */
+                border-radius: 15px; /* Rounded corners for the items */
+                text-align: left; /* Align text to the left */
+                font-size: 18px; /* Larger font size */
+                font-weight: bold; /* Bold font weight */
+                background-color: #2C3E50; /* Subtle change in item background */
+                color: #FFFFFF; /* White text color */
+                display: block; /* Block display for the full-width effect */
+                transition: background-color 0.3s ease; /* Transition for hover effect */
             }
 
             .menuItem:hover {
-                background-color: blue;
-                color: #E0E0E0;
+                background-color: #34495E; /* Darker shade on hover */
+                color: #1ABC9C; /* Light blue color for the text on hover */
+                text-decoration: none; /* No underline on hover */
+            }
+
+            A {
+                text-decoration: none;
             }
         </STYLE>
     </HEAD>
@@ -86,27 +102,34 @@
     <BODY>
         <DIV class='container'>
             <DIV class='sidenav'>
-                <DIV class='user-icon'></DIV>
+            <DIV class='user-icon'></DIV>
                 <DIV style='margin: auto; width: 50%; text-align: left;'>
                     Welcome
-                    <P style='color: #0FAF80'><?php echo getUName($db, $uid); ?></P>
+                    <P style='color: #0FAF80'>grotka01</P>
                 </DIV>
 
-                <A class='menuItem' style='position: fixed; top: 165; left: 20; width: 185;' href='landing_page.php?menu=logout'>Sign out</A>
-                <A class='menuItem' style='position: fixed; top: 215; left: 20; width: 185;' href='?menu=dashboard'>Dashboard</A>
-                <A class='menuItem' style='position: fixed; top: 265; left: 20; width: 185;'  href='?menu=trendingRecipes'>Trending Recipes</A>
-            </DIV>
+                <DIV style='margin: 10px;'>
+                    <A class='sidenav-links menuItem' href='landing_page.php?menu=logout'>Sign out</A>
+                </DIV>
+
+                <DIV style='margin: 10px;'>
+                    <A class='sidenav-links menuItem' href='?menu=profile'>Profile</A>
+                </DIV>
+                
+                <DIV style='margin: 10px;'>
+                    <A class='sidenav-links menuItem' href='?menu=dashboard'>Dashboard</A>
+                </DIV>
+
+                <DIV style='margin: 10px;'>
+                    <A class='sidenav-links menuItem' href='?menu=browse'>Browse Recipe</A>
+                </DIV>
+
+                <DIV style='margin: 10px;'>
+                    <A class='sidenav-links menuItem' href='?menu=previousRecipes'>Trending Recipe</A>
+                </DIV>
 
             <DIV class='main'>
-                <DIV class='grid'>
-                    <DIV style='grid-column: 1;'></DIV>
-                    <A class='menuItem' style='grid-column: 2' href='?menu=browse'>Browse Recipes</A>
-                    <A class='menuItem' style='grid-column: 3' href='?menu=makeRecipe'>Make Recipe</A>
-                    <DIV style='grid-column: 4;'></DIV>
-                </DIV>
-
                 <?php
-                $menu = $_GET['menu'];
                 if ($menu == 'login' || $menu == 'dashboard') {
                     showProfile($db, $uid);
                 } else if ($menu == 'browse') {
@@ -121,6 +144,8 @@
                     getTrendingRecipes($db, $uid);
                 } else if ($menu == 'addreview') {
                     addReview($db, $uid, $_POST);
+                } else if ($menu == 'profile'){
+                    displayUserProfile($db, $dietaryRestrictions, $uid);
                 }
                 ?>
             </DIV>
