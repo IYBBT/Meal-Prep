@@ -3,8 +3,11 @@
 
 <HTML>
     <HEAD>
-        <TITLE>Website</TITLE>
-        <?php include_once("bootstrap.php"); ?>    
+        <TITLE></TITLE>
+        <?php 
+        include_once("bootstrap.php");
+        $uid = $_SESSION['uid'];
+        ?>
         
         <STYLE>
             .main {
@@ -86,12 +89,12 @@
                 <DIV class='user-icon'></DIV>
                 <DIV style='margin: auto; width: 50%; text-align: left;'>
                     Welcome
-                    <P style='color: #0FAF80'>grotka01</P>
+                    <P style='color: #0FAF80'><?php echo getUName($db, $uid); ?></P>
                 </DIV>
 
                 <A class='menuItem' style='position: fixed; top: 165; left: 20; width: 185;' href='landing_page.php?menu=logout'>Sign out</A>
                 <A class='menuItem' style='position: fixed; top: 215; left: 20; width: 185;' href='?menu=dashboard'>Dashboard</A>
-                <A class='menuItem' style='position: fixed; top: 265; left: 20; width: 185;'  href='?menu=previousRecipes'>Trending Recipes</A>
+                <A class='menuItem' style='position: fixed; top: 265; left: 20; width: 185;'  href='?menu=trendingRecipes'>Trending Recipes</A>
             </DIV>
 
             <DIV class='main'>
@@ -103,9 +106,7 @@
                 </DIV>
 
                 <?php
-                // print_r($_GET);
                 $menu = $_GET['menu'];
-                $uid = 4; //$_SESSION['uid'];
                 if ($menu == 'login' || $menu == 'dashboard') {
                     showProfile($db, $uid);
                 } else if ($menu == 'browse') {
@@ -116,8 +117,8 @@
                     showRecipe($db, $_GET['mid']);
                 } else if ($menu == 'makeRecipe') {
                     makeRecipe($db);
-                } else if ($menu == 'previousRecipes') {
-                    getPreviousRecipes($db, $uid);
+                } else if ($menu == 'trendingRecipes') {
+                    getTrendingRecipes($db, $uid);
                 } else if ($menu == 'addreview') {
                     addReview($db, $uid, $_POST);
                 }

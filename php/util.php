@@ -7,19 +7,16 @@ include_once('bootstrap.php');
 include_once('db.php');
 
 ?>
+<SCRIPT>
+    function change_page(url, time) {
+        setTimeout(function() {
+            window.location.href = url;
+        }, time);
+    }
+</SCRIPT>
+
 
 <STYLE>
-    .login-form {
-        margin: 3px;
-        padding: 5px;
-        border: solid 2px #0F5EAF;
-    }
-
-    .login-item {
-        margin: 5px;
-        padding: 5px;
-    }
-
     .meal-box {
         border: solid 2px blue;
         margin: 3px;
@@ -71,36 +68,11 @@ include_once('db.php');
 </STYLE>
 
 <?php
-function loginForm() {
-    ?>
 
-    <FORM class='login-form' action='dashboard.php?menu=login' method='post'>
-        <INPUT class='login-item' type='text' name='uName' placeholder='Username' size=5 />
-        <INPUT class='login-item' type='text' name='pWord' placeholder='Password' size=5 />
-        Remember Me<INPUT class='login-item' type='checkbox' name='rm'/>
-        <INPUT type='submit' value='Login'/>
-    </FORM>
-
-    <?php
-}
-
-function logoutForm() {
-    ?>
-
-    <FORM class='login-form' action='?menu=logout' method='post'>
-        <INPUT type='submit' value='Logout'/>
-    </FORM>
-
-    <?php
-}
-
-function getUID($db, $userInfo) {
-    $uName = $_POST['uName'];
-    $pWord = $_POST['pWord'];
-    
+function getUID($db, $uName) {
     $sql = "SELECT id "
          . "FROM user "
-         . "WHERE uName='$uName' AND pWord='$pWord'";
+         . "WHERE uName='$uName'";
 
     $res = $db->query($sql);
 
@@ -109,8 +81,42 @@ function getUID($db, $userInfo) {
         return $row['id'];
     }
 
-    header('refresh:2;?menu=landing-page');
-    echo 'Failed to login. Either the Username or Password is incorrect!';
+    header('refresh:2;landing_page.php');
+    echo 'Failed to login. Either the Username or Password is incorrect.';
+}
+
+function getUName($db, $uid) {
+    $sql = "SELECT uName "
+        . "FROM user "
+        . "WHERE id=$uid";
+
+    $res = $db->query($sql);
+    if ($res) {
+        $row = $res->fetch();
+        return $row['uName'];
+    }
+
+    header("refresh:2;landing_page.php");
+    echo 'Failed to login. Either the Username or Password is incorrect.';
+}
+
+function isAdmin($db, $uid) {
+    $sql = "SELECT aid "
+        . "FROM admin "
+        . "WHERE aid IN ($uid)";
+
+    $res = $db->query($sql);
+    if ($res) {
+        while ($res->fetch())
+            return TRUE;
+        return FALSE;
+    } else {
+        ?>
+        <SCRIPT>
+            change_page("landing_page.php", 1000);
+        </SCRIPT>
+        <?php
+    }
 }
 
 function showProfile($db, $uid) {
@@ -138,7 +144,7 @@ function showProfile($db, $uid) {
 
 // Shows the recipe with all steps, ingredients, and picture
 function showRecipe($db, $mid) {
-    $sql = "SELECT mName, meal_image "
+    $sql = "SELECT mName, image "
         . "FROM meal "
         . "WHERE mid=$mid";
 
@@ -150,7 +156,7 @@ function showRecipe($db, $mid) {
 
     $mealInfo = $res->fetch();
     $mName = $mealInfo['mName'];
-    $image_url = $mealInfo['meal_image'];
+    $image = $mealInfo['image'];
     ?>
 
     <STYLE>
@@ -162,7 +168,7 @@ function showRecipe($db, $mid) {
             text-align: center;
             grid-row: 0;
         }
-
+        
         .recipe_image {
             grid-row: 1;
             grid-column: 1;
@@ -170,8 +176,25 @@ function showRecipe($db, $mid) {
             margin: 25px;
         }
 
-        .review-bar {
+        .wrapper {
+            display: inline-block;
+        }
 
+        .wrapper * {
+            float: right;
+        }
+
+        .rating-label {
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .rating {
+            display: none;
+        }
+
+        .rating:checked ~ .rating-label {
+            color: red;
         }
     </STYLE>
 
@@ -221,7 +244,7 @@ function showRecipe($db, $mid) {
 
         <DIV style='display: grid; margin: 5px;'>
             <?php
-            echo "<IMG class='recipe_image' src='$image_url' alt='$mName' width='200' height='200'>";
+            echo "<IMG class='recipe_image' src='$image' alt='$mName' width='200' height='200'>";
             echo "<DIV style='grid-column: 0; grid-row: 2; margin: 3px'>";
             $sql = "SELECT step "
                 . "FROM meal NATURAL JOIN recipe_step "
@@ -244,19 +267,17 @@ function showRecipe($db, $mid) {
             </DIV>
             <DIV style='grid-row: 0; display: grid;'>
                 <?php
+                echo "<FORM style='grid-column: 1 / 25; grid-row: 0; display: grid;' method='post' action='?menu=addreview'>";
+                echo "<DIV class='wrapper'>";
                 for ($i = 1; $i <= 5; ++$i) {
                     ?>
-                    <A style='grid-column: <?php echo $i + 10; ?>; grid-row: 1;' href='<?php echo "?menu=recipe&mid=$mid&review=$i"; ?>'>
-                        <IMG src='../png/star1.png' />
-                    </A>
+                        <INPUT class='rating' type='radio' name='rating' id='rating<?php echo $i; ?>' value='<?php echo $i; ?>' />
+                    <LABEL class='rating-label' for='rating<?php echo $i; ?>'>&#10038</LABEL>
                     <?php
                 }
-
-                $review = $_GET['review'];
-                echo "<FORM style='grid-column: 1 / 25; grid-row: 0; display: grid;' method='post' action='?menu=addreview'>";
+                echo "</DIV>";
                 echo "<LABEL style='text-align: center; grid-row: 1;' for='review'>Review:</LABEL>";
                 echo "<TEXTAREA style='grid-row: 0;' name='review' rows='2' cols='64' maxlength='256'></TEXTAREA>";
-                echo "<INPUT type='hidden' name='rating' value='$review' />";
                 echo "<INPUT type='hidden' name='mid' value='$mid' />";
                 echo "<INPUT type='submit' value='submit' />";
                 echo "</FORM>";
@@ -265,7 +286,22 @@ function showRecipe($db, $mid) {
         </DIV>
         <DIV>
             <?php
-            $sql = "SELECT "
+            $sql = "SELECT rating, review "
+                . "FROM review "
+                . "WHERE mid=$mid";
+
+            $res = $db->query($sql);
+            if (!$res) {
+                header("refresh:2;url=dashboard.php?menu=browse");
+                echo "Could not load reviews";
+            } else {
+                while ($r = $res->fetch()) {
+                    $rating = $r['rating'];
+                    $review = $r['review'];
+                
+                    echo "<P>$rating, $review</P>";
+                }
+            }
             ?>
         </DIV>
     </DIV>
@@ -329,13 +365,13 @@ function getIngredients($db, $mid) {
     if (!$res) {
         header('refresh:2?menu=dashboard');
         echo 'Could not find the ingredients for a recipe.';
+    } else {
+        $ings = array();
+        while ($row = $res->fetch())
+            array_push($ings, array($row[0], $row[2], $row[3]));
+        
+        return $ings;
     }
-
-    $ings = array();
-    while ($row = $res->fetch())
-        array_push($ings, array($row[0], $row[2], $row[3]));
-    
-    return $ings;
 }
 
 // Allows an end user to browse meals by displaying meals
@@ -381,7 +417,6 @@ function recipeForm($db) {
 
         $sql = "SELECT iid, iName FROM ingredient WHERE type = '$type'";
         $res = $db->query($sql);
-
         if ($res) {
             while ($row = $res->fetch()) {
                 $iid = $row['iid'];
@@ -444,12 +479,16 @@ function addReview($db, $uid, $reviewInfo) {
         . "VALUE($uid, $mid, $rating, '$review')";
 
     $res = $db->query($sql);
-    if (!$res) {
-        header("refresh: 2;Location: dashboard.php?menu=dashboard");
+    if (!$res)
         echo "Error adding review.";
-    } else {
-        header("Location: dashboard.php?menu=dashboard");
-    }
+    else
+        echo "<H2>Thank you for the review.</H2>";
+
+    ?>
+    <SCRIPT>
+        change_page("dashboard.php?menu=dashboard", 1000);
+    </SCRIPT>
+    <?php    
 }
 
 // Creates a form for an end user to create a meal
@@ -457,9 +496,26 @@ function makeRecipe($db) {
 
 }
 
-//
-function getPreviousRecipes($db, $uid) {
-    
+function getTrendingRecipes($db, $uid) {
+    $sql = "SELECT meal.mid, mName, meal_image
+            FROM click RIGHT OUTER JOIN meal
+            ON meal.mid = click.mid AND cdate = CURRENT_DATE
+            GROUP BY meal.mid
+            HAVING COUNT(cid) >= ALL (
+                SELECT COUNT(cid)
+                FROM click
+                WHERE cdate = CURRENT_DATE
+                GROUP BY click.mid
+            );";
+
+    $res = $db->query($sql);
+    if (!$res) {
+        echo "<SCRIPT>change_page('dashboard.php?menu=dashboard', 1000)</SCRIPT>";
+        echo "A trending recipe was not generated.";
+    } else {
+        $recipes = $res->fetchAll();
+        echo "There were " . count($recipes) . " results.";
+    }
 }
 
 ?>

@@ -2,8 +2,8 @@
 CREATE TABLE meal (
     mid     INT AUTO_INCREMENT PRIMARY KEY,
     uid     INT,
-    mName   VARCHAR(64)
-    image   BLOB
+    mName   VARCHAR(64),
+    image   VARCHAR(64)
 );
 
 CREATE TABLE recipe_step (
@@ -59,4 +59,10 @@ CREATE TABLE meal_uses (
     mid  INT,
     iid  INT,
     UNIQUE (mid, iid)
+);
+
+CREATE TABLE click (
+    cid     INT AUTO_INCREMENT PRIMARY KEY,
+    mid     INT,
+    cdate   DATE
 );
