@@ -1,20 +1,9 @@
 
 <?php
-
 session_start();
-
 include_once('bootstrap.php');
 include_once('db.php');
-
 ?>
-<SCRIPT>
-    function change_page(url, time) {
-        setTimeout(function() {
-            window.location.href = url;
-        }, time);
-    }
-</SCRIPT>
-
 
 <STYLE>
     .meal-box {
@@ -67,6 +56,14 @@ include_once('db.php');
     }
 </STYLE>
 
+<SCRIPT>
+    function change_page(url, time) {
+        setTimeout(function() {
+            window.location.href = url;
+        }, time);
+    }
+</SCRIPT>
+
 <?php
 
 function getUID($db, $uName) {
@@ -96,27 +93,8 @@ function getUName($db, $uid) {
         return $row['uName'];
     }
 
-    header("refresh:2;landing_page.php");
+    echo "<SCRIPT>change_page('landing_page.php', 1000)</SCRIPT>";
     echo 'Failed to login. Either the Username or Password is incorrect.';
-}
-
-function isAdmin($db, $uid) {
-    $sql = "SELECT aid "
-        . "FROM admin "
-        . "WHERE aid IN ($uid)";
-
-    $res = $db->query($sql);
-    if ($res) {
-        while ($res->fetch())
-            return TRUE;
-        return FALSE;
-    } else {
-        ?>
-        <SCRIPT>
-            change_page("landing_page.php", 1000);
-        </SCRIPT>
-        <?php
-    }
 }
 
 function showProfile($db, $uid) {
@@ -162,6 +140,7 @@ function showRecipe($db, $mid) {
     <STYLE>
         .recipe {
             display: grid;
+            color: #000000;
         }
 
         .meal-name {
@@ -262,27 +241,22 @@ function showRecipe($db, $mid) {
             ?>
         </DIV>
         <DIV class='review-bar'>
-            <DIV style='grid-row: 1;'>
-
-            </DIV>
-            <DIV style='grid-row: 0; display: grid;'>
-                <?php
-                echo "<FORM style='grid-column: 1 / 25; grid-row: 0; display: grid;' method='post' action='?menu=addreview'>";
-                echo "<DIV class='wrapper'>";
-                for ($i = 1; $i <= 5; ++$i) {
-                    ?>
-                        <INPUT class='rating' type='radio' name='rating' id='rating<?php echo $i; ?>' value='<?php echo $i; ?>' />
-                    <LABEL class='rating-label' for='rating<?php echo $i; ?>'>&#10038</LABEL>
-                    <?php
-                }
-                echo "</DIV>";
-                echo "<LABEL style='text-align: center; grid-row: 1;' for='review'>Review:</LABEL>";
-                echo "<TEXTAREA style='grid-row: 0;' name='review' rows='2' cols='64' maxlength='256'></TEXTAREA>";
-                echo "<INPUT type='hidden' name='mid' value='$mid' />";
-                echo "<INPUT type='submit' value='submit' />";
-                echo "</FORM>";
+            <?php
+            echo "<FORM style='grid-column: 1 / 25; grid-row: 0; display: grid;' method='post' action='?menu=addreview'>";
+            echo "<DIV class='wrapper'>";
+            for ($i = 1; $i <= 5; ++$i) {
                 ?>
-            </DIV>
+                <INPUT class='rating' type='radio' name='rating' id='rating<?php echo $i; ?>' value='<?php echo $i; ?>' />
+                <LABEL class='rating-label' for='rating<?php echo $i; ?>'>&#10038</LABEL>
+                <?php
+            }
+            echo "</DIV>";
+            echo "<LABEL style='text-align: center; grid-row: 1;' for='review'>Review:</LABEL>";
+            echo "<TEXTAREA style='grid-row: 0;' name='review' rows='2' cols='64' maxlength='256'></TEXTAREA>";
+            echo "<INPUT type='hidden' name='mid' value='$mid' />";
+            echo "<INPUT type='submit' value='Submit Review' />";
+            echo "</FORM>";
+            ?>
         </DIV>
         <DIV>
             <?php
@@ -292,7 +266,7 @@ function showRecipe($db, $mid) {
 
             $res = $db->query($sql);
             if (!$res) {
-                header("refresh:2;url=end-user.php?menu=browse");
+                echo "<SCRIPT>change_page('end-user.php?menu=browse', 1000)</SCRIPT>";
                 echo "Could not load reviews";
             } else {
                 while ($r = $res->fetch()) {
@@ -413,7 +387,7 @@ function recipeForm($db) {
     foreach ($types as $type) {
         echo "<DIV style='display: inline-grid;'>";
         echo "<LABEL style='grid-row: 1; text-align: center' for='$type'>$type:</LABEL>";
-        echo "<SELECT style='grid-row: 0;' class='ing_list' name='$type' size='2'  multiple>";
+        echo "<SELECT style='grid-row: 0;' class='ing_list' name='$type' size='2' multiple>";
 
         $sql = "SELECT iid, iName FROM ingredient WHERE type = '$type'";
         $res = $db->query($sql);
@@ -486,7 +460,7 @@ function addReview($db, $uid, $reviewInfo) {
 
     ?>
     <SCRIPT>
-        change_page("end-user.php?menu=dashboard", 1000);
+        change_page("end-user.php?menu=dashboard", 0);
     </SCRIPT>
     <?php    
 }
@@ -501,7 +475,7 @@ function click($db, $mid) {
 
     $res = $db->query($sql);
     if (!$res) {
-        echo "<SCRIPT>change_page('?menu=dashboard', 1000)</SCRIPT>";
+        echo "<SCRIPT>change_page('?menu=dashboard', 500)</SCRIPT>";
         echo "Error adding click to database";
     } else {
         echo "<SCRIPT>change_page('?menu=recipe&mid=$mid', 0);</SCRIPT>";
@@ -511,7 +485,6 @@ function click($db, $mid) {
 // Generates a trending recipe, which is the recipe with the most engagement (clicks) today. If there is a tie between multiple, a random one of the most
 // highly engaged recipes is selected.
 function getTrendingRecipes($db, $uid) {
-
     $sql = "SELECT meal.mid, mName, image
             FROM click RIGHT OUTER JOIN meal
             ON meal.mid = click.mid AND cdate = CURRENT_DATE
@@ -520,8 +493,7 @@ function getTrendingRecipes($db, $uid) {
                 SELECT COUNT(cid)
                 FROM click
                 WHERE cdate = CURRENT_DATE
-                GROUP BY click.mid
-            );";
+                GROUP BY click.mid)";
 
     $res = $db->query($sql);
     if ($res == FALSE) {
@@ -529,22 +501,18 @@ function getTrendingRecipes($db, $uid) {
     } else {
         $recipes = $res->fetchAll();
         $trendingNum = random_int(0, count($res) - 1);
-        echo "<DIV class='col-5'></DIV><P>There were " . count($recipes) . " results.</P>";
+        echo "<P>There were " . count($recipes) . " results.</P>";
 
         $trending = $recipes[$trendingNum];
 
-        ?>
-            <DIV class='col-12' style='text-size: 30px'>Trending recipe</DIV>
+        $trendingMName = $trending['mName'];
+        $trendingImage = $trending['image'];
+        $trendingMID   = $trending['mid'];
 
+        echo "<DIV class='col-12' font-size: '40px'>Recipe of the day: $trendingMName</DIV>";
 
-           
-        <?php
-
-       
+        echo "<img src='$trendingImage' alt='$trendingMName'>";
     }
-   
-    //  style='width: 70%; height: 50%; text-align: center'
-   
 }
 
 function displayUserProfile($db, $dietaryRestrictions, $uid) {

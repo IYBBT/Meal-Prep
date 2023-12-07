@@ -1,8 +1,10 @@
+
 <!DOCTYPE HTML>
 
 <?php
 session_start();
-include_once('util.php');
+include_once('end_util.php');
+include_once('admin_util.php');
 ?>
 
 <HTML>
@@ -23,16 +25,18 @@ include_once('util.php');
 
                 $res = $db->query($sql);
                 if (!$res) {
-                    header("refresh: 2;url=?logout");
+                    echo "<SCRIPT>change_page('?login-failed', 0)</SCRIPT>";
                     echo "Either username or password is incorrect.";
                 } else if (md5($pWord) == $res->fetch()['pWord']){
                     $_SESSION['uid'] = getUID($db, $uName);
                     $uid = $_SESSION['uid'];
-                    if (isAdmin($db, $uid)) {
-                        header("Location: admin-user.php?menu=main");
-                    } else {
-                        header("Location: end-user.php?menu=dashboard");
-                    }
+                    if (isAdmin($db, $uid))
+                        echo "<SCRIPT>change_page('admin-user.php?menu=main', 0)</SCRIPT>";
+                    else
+                        echo "<SCRIPT>change_page('end-user.php?menu=dashboard', 0)</SCRIPT>";
+                } else {
+                    echo "<SCRIPT>change_page('?menu=login-failed', 0)</SCRIPT>";
+                    echo "Either username or password is incorrect.";
                 }
             } else if ($menu == 'logout') {
                 unset($_SESSION['uid']);
@@ -109,15 +113,16 @@ include_once('util.php');
             .container {
                 padding: 16px;
             }
-
         </STYLE>
     </HEAD>
 
     <BODY>
         <DIV class="bg">
             <DIV class="login-container">
-                 <DIV class="container">
-                    <?php if ($menu == 'landing-page') { ?>
+                <DIV class="container">
+                    <?php
+                    if ($menu == 'landing-page') {
+                    ?>
                         <FORM action='?menu=login' method='post'>
                             <LABEL for="uName"><b>Username</B></LABEL>
                             <INPUT type="text" placeholder="Enter Username" name="uName" required>
@@ -127,15 +132,32 @@ include_once('util.php');
 
                             <INPUT class="login-btn" type='submit' value='Login'/>
                         </FORM>
-
-                    <?php } else if ($menu == 'main') {  ?>
+                    <?php
+                    } else if ($menu == 'main') {
+                        ?>
                         <FORM action='?menu=logout' method='post'>
                             <INPUT type='submit' value='Logout'/>
                         </FORM>
-                    <?php }  ?>
-                 </DIV> <!- close container  ->
+                        <?php
+                    } else if ($menu == 'login-failed') {
+                        ?>
+                        <P style='text-align: center; color: red;'>Either the username or password is incorrect.</P>
+                        <P style='text-align: center; color: red;'>Try again.</P>
+                        <FORM action='?menu=login' method='post'>
+                            <LABEL for="uName"><b>Username</B></LABEL>
+                            <INPUT type="text" placeholder="Enter Username" name="uName" required>
+
+                            <LABEL for="pWord"><b>Password</B></LABEL>
+                            <INPUT type="password" placeholder="Enter Password" name="pWord" required>
+
+                            <INPUT class="login-btn" type='submit' value='Login'/>
+                        </FORM>
+                        <A class='' href="?sign-up">Sign-Up</A>
+                        <?php
+                    }
+                    ?>
+                </DIV> <!- close container  ->
             </DIV> <!- close login-container  ->
         </DIV> <!- close bg  ->
     </BODY>
 </HTML>
-

@@ -1,11 +1,10 @@
 
-<?php include("util.php"); ?>
 
 <HTML>
     <HEAD>
         <TITLE></TITLE>
         <?php 
-        include_once("bootstrap.php");
+        include_once('end_util.php');
         $uid = $_SESSION['uid'];
         ?>
         
@@ -105,7 +104,7 @@
             <DIV class='user-icon'></DIV>
                 <DIV style='margin: auto; width: 50%; text-align: left;'>
                     Welcome
-                    <P style='color: #0FAF80'>grotka01</P>
+                    <P style='color: #0FAF80'><?php echo getUName($db, $uid) ?></P>
                 </DIV>
 
                 <DIV style='margin: 10px;'>
